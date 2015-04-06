@@ -1,12 +1,11 @@
-// Homework 1
 // Color to Greyscale Conversion
 
 //A common way to represent color images is known as RGBA - the color
-//is specified by how much Red, Grean and Blue is in it.
-//The 'A' stands for Alpha and is used for transparency, it will be
+//is specified by how much Red, Green, and Blue is in it.
+//The 'A' stands for Alpha and is used for transparency; it will be
 //ignored in this homework.
 
-//Each channel Red, Blue, Green and Alpha is represented by one byte.
+//Each channel Red, Blue, Green, and Alpha is represented by one byte.
 //Since we are using one byte for each color there are 256 different
 //possible values for each color.  This means we use 4 bytes per pixel.
 
@@ -32,11 +31,13 @@
 //so that the entire image is processed.
 
 #include "utils.h"
+#include <stdio.h>
 
 __global__
 void rgba_to_greyscale(const uchar4* const rgbaImage,
                        unsigned char* const greyImage,
-                       int numRows, int numCols)
+                       int numCols, int numRows)
+// change the parameter for better readability and understanding
 {
   //TODO
   //Fill in the kernel to convert from color to greyscale
@@ -48,17 +49,16 @@ void rgba_to_greyscale(const uchar4* const rgbaImage,
   //Note: We will be ignoring the alpha channel for this conversion
 
   //First create a mapping from the 2D block and grid locations
-  //to an absolute 2D location in the image, then use that to
+  //to an absolute 2D location in the image, they use that to
   //calculate a 1D offset
   int col = threadIdx.x + blockIdx.x * blockDim.x;
   int row = threadIdx.y + blockIdx.y * blockDim.x;
 
-  if (row < numCols && col < numRows) {
-    int index = row * numRows + col;
+  if (row < numRows && col < numRows) 
+    int index = row * numCols + col;
   uchar4 rgba= rgbaImage[index];
   float channelSum = 0.299f * rgba.x + 0.587f * rgba.y + 0.114f * rgba.z;
   greyImage[index] = channelSum;
-
 }
 
 void your_rgba_to_greyscale(const uchar4 * const h_rgbaImage, uchar4 * const d_rgbaImage,
@@ -66,10 +66,10 @@ void your_rgba_to_greyscale(const uchar4 * const h_rgbaImage, uchar4 * const d_r
 {
   //You must fill in the correct sizes for the blockSize and gridSize
   //currently only one block with one thread is being launched
-  const dim3 blockSize(32, 32, 1); //TODO
-  const dim3 gridSize( numRows/32+1, numCols/32+1, 1); //TODO
+  const dim3 blockSize(32, 32, 1);
+  const dim3 gridSize( numRows/32 + 1, numCols/32 + 1, 1);  //TODO
   rgba_to_greyscale<<<gridSize, blockSize>>>(d_rgbaImage, d_greyImage, numRows, numCols);
   
-  cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
-
+  cudaDeviceSynchronize(); 
+  checkCudaErrors(cudaGetLastError());
 }
