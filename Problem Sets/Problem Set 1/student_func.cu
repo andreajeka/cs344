@@ -54,11 +54,12 @@ void rgba_to_greyscale(const uchar4* const rgbaImage,
   int col = threadIdx.x + blockIdx.x * blockDim.x;
   int row = threadIdx.y + blockIdx.y * blockDim.x;
 
-  if (row < numRows && col < numRows) 
+  if (row < numRows && col < numRows) {
     int index = row * numCols + col;
-  uchar4 rgba= rgbaImage[index];
-  float channelSum = 0.299f * rgba.x + 0.587f * rgba.y + 0.114f * rgba.z;
-  greyImage[index] = channelSum;
+    uchar4 rgba= rgbaImage[index];
+    float channelSum = 0.299f * rgba.x + 0.587f * rgba.y + 0.114f * rgba.z;
+    greyImage[index] = channelSum;
+  } 
 }
 
 void your_rgba_to_greyscale(const uchar4 * const h_rgbaImage, uchar4 * const d_rgbaImage,
